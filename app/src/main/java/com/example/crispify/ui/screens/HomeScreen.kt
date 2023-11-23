@@ -29,6 +29,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -95,7 +96,7 @@ fun HomeScreen(){
 
 @Composable
 fun GreetingHerder(modifier: Modifier){
-    Row(modifier = modifier) {
+    Row(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.weight(.7f)) {
             Text(
                 "Good morning",
@@ -111,7 +112,7 @@ fun GreetingHerder(modifier: Modifier){
             .weight(.3f)
             .size(60.dp),
             alignment = Alignment.CenterEnd,
-            painter = painterResource(R.drawable.ic_launcher_background),
+            painter = painterResource(R.drawable.ic_launcher_foreground),
             contentDescription =""
         )
     }
@@ -149,42 +150,45 @@ fun RecipeItem(recipe: Recipe){
     )
     {
         Card(modifier = Modifier.fillMaxSize()){
-            AsyncImage(model = recipe.imageUrl,
-                contentDescription = "",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .drawWithCache {
-                        val gradient = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color(red = 43, green = 45, blue = 65)
-                            ),
-                            startY = size.height / 3,
-                            endY = size.height
-                        )
-                        onDrawWithContent {
-                            drawContent()
-                            drawRect(gradient, blendMode = BlendMode.Multiply)
+            Box {
+                AsyncImage(model = recipe.imageUrl,
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .drawWithCache {
+                            val gradient = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    Color(red = 255, green = 161, blue = 65)),
+                                startY = size.height / 3,
+                                endY = size.height
+                            )
+                            onDrawWithContent {
+                                drawContent()
+                                drawRect(gradient, blendMode = BlendMode.Multiply)
+                            }
                         }
-                    }
-            )
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp), verticalArrangement = Arrangement.Bottom) {
+                )
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp), verticalArrangement = Arrangement.Bottom) {
 
-                Box(modifier = Modifier
-                    .clip(RoundedCornerShape(15.dp))
+                    Box(modifier = Modifier
+                        .clip(RoundedCornerShape(15.dp))
 //                    .background(Color.Gray)
-                    .padding(vertical = 5.dp, horizontal = 10.dp)) {
-                    Text("Breakfast", fontWeight = FontWeight.Medium, color = Color.White)
-                }
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(recipe.title, fontWeight = FontWeight.Bold, color = Color.White)
-                Spacer(modifier = Modifier.height(5.dp))
-                Text("${recipe.ingredients.size} ingredients | ${recipe.cookTime} Min",  fontWeight = FontWeight.Normal, fontSize = 10.sp, color = Color.White)
+                        .padding(vertical = 5.dp, horizontal = 10.dp)) {
+                        Text("Breakfast", fontWeight = FontWeight.Medium, color = Color.White)
+                    }
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text(recipe.title, fontWeight = FontWeight.Bold, color = Color.White)
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text("${recipe.ingredients.size} ingredients | ${recipe.cookTime} Min",  fontWeight = FontWeight.Normal, fontSize = 10.sp, color = Color.White)
 
-            }}
+                }
+            }
+
+        }
     }
 }
 
