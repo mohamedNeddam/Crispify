@@ -1,7 +1,9 @@
 package com.example.crispify.ui
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -18,18 +20,19 @@ import kotlinx.coroutines.withContext
 
 class RecipesViewModel(private val recipesRepository: RecipesRepository): ViewModel() {
 
-    val recipesList: MutableState<RecipesState> = mutableStateOf(RecipesState.Loading)
+    var recipesList: RecipesState by mutableStateOf(RecipesState.Loading)
+        private set
 
     init {
         getRecipes()
     }
     private fun getRecipes(){
         viewModelScope.launch() {
-            try {
+            recipesList = try {
                 val remoteRecipes = getRemoteRecipes()
-                recipesList.value = RecipesState.Success(remoteRecipes)
+                RecipesState.Success(remoteRecipes)
             }catch (exception : Exception){
-                recipesList.value = RecipesState.Error
+                RecipesState.Error
             }
         }
     }

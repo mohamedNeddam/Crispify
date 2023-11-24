@@ -79,7 +79,7 @@ fun HomeScreen(){
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 16.dp))
 
-                when(recipesViewModel.recipesList.value){
+                when(recipesViewModel.recipesList){
                     is RecipesState.Error -> Text("error")
                     is RecipesState.Loading -> {
                         Row{
@@ -98,7 +98,7 @@ fun HomeScreen(){
                         }
                     }
                     is RecipesState.Success -> LazyRow(){
-                        items(((recipesViewModel.recipesList.value as RecipesState.Success).recipes)){
+                        items((recipesViewModel.recipesList as RecipesState.Success).recipes){
                                 recipe -> RecipeItem(recipe)
                         }
                     }
