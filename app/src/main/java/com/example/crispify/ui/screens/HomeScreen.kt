@@ -1,7 +1,14 @@
 package com.example.crispify.ui.screens
 
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +30,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -33,8 +41,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -71,7 +81,22 @@ fun HomeScreen(){
 
                 when(recipesViewModel.recipesList.value){
                     is RecipesState.Error -> Text("error")
-                    is RecipesState.Loading -> Text("loading")
+                    is RecipesState.Loading -> {
+                        Row{
+                            ComponentRectangle(
+                                Modifier
+                                    .padding(start = 16.dp, top = 16.dp)
+                                    .width(200.dp)
+                                    .height(300.dp)
+                            )
+                            ComponentRectangle(
+                                Modifier
+                                    .padding(start = 16.dp, top = 16.dp)
+                                    .width(200.dp)
+                                    .height(300.dp)
+                            )
+                        }
+                    }
                     is RecipesState.Success -> LazyRow(){
                         items(((recipesViewModel.recipesList.value as RecipesState.Success).recipes)){
                                 recipe -> RecipeItem(recipe)
@@ -89,7 +114,7 @@ fun HomeScreen(){
 @Composable
 fun GreetingHerder(modifier: Modifier){
     Row(modifier = modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.weight(.7f)) {
+        Column( modifier = Modifier.width(250.dp)) {
             Text(
                 "Good morning",
                 fontWeight = FontWeight.SemiBold
@@ -100,10 +125,9 @@ fun GreetingHerder(modifier: Modifier){
                 fontSize = 20.sp
             )
         }
+        Spacer(modifier = Modifier.weight(1f))
         Image(modifier = Modifier
-            .weight(.3f)
-            .size(60.dp),
-            alignment = Alignment.CenterEnd,
+            .size(100.dp),
             painter = painterResource(R.drawable.ic_launcher_foreground),
             contentDescription =""
         )
@@ -138,7 +162,7 @@ fun RecipeItem(recipe: Recipe){
         .padding(start = 16.dp, top = 16.dp)
         .width(200.dp)
         .height(300.dp)
-        .clip(RoundedCornerShape(25.dp))
+        .clip(RoundedCornerShape(bottomEnd = 25.dp))
     )
     {
         Card(modifier = Modifier.fillMaxSize()){
@@ -147,20 +171,9 @@ fun RecipeItem(recipe: Recipe){
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .drawWithCache {
-                            val gradient = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color(red = 255, green = 161, blue = 65)),
-                                startY = size.height / 3,
-                                endY = size.height
-                            )
-                            onDrawWithContent {
-                                drawContent()
-                                drawRect(gradient, blendMode = BlendMode.Multiply)
-                            }
-                        }
+                        .fillMaxWidth()
+                        .height(170.dp)
+                        .clip(RoundedCornerShape(bottomEnd = 25.dp))
                 )
                 Column(modifier = Modifier
                     .fillMaxSize()
@@ -169,13 +182,13 @@ fun RecipeItem(recipe: Recipe){
                     Box(modifier = Modifier
                         .clip(RoundedCornerShape(15.dp))
 //                    .background(Color.Gray)
-                        .padding(vertical = 5.dp, horizontal = 10.dp)) {
-                        Text("Breakfast", fontWeight = FontWeight.Medium, color = Color.White)
+                        .padding(top = 5.dp)) {
+                        Text("Breakfast", fontWeight = FontWeight.Bold)
                     }
                     Spacer(modifier = Modifier.height(5.dp))
-                    Text(recipe.title, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(recipe.title, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(5.dp))
-                    Text("${recipe.ingredients.size} ingredients | ${recipe.cookTime} Min",  fontWeight = FontWeight.Normal, fontSize = 10.sp, color = Color.White)
+                    Text("${recipe.ingredients.size} ingredients | ${recipe.cookTime} Min",  fontWeight = FontWeight.Normal, fontSize = 10.sp)
 
                 }
             }
@@ -190,7 +203,7 @@ fun BottomExplore(){
         .padding(16.dp)
         .fillMaxWidth()
         .height(130.dp)
-        .clip(RoundedCornerShape(25.dp))
+        .clip(RoundedCornerShape(bottomEnd = 25.dp))
 //        .background(Color.White)
     ) {
         Row(modifier = Modifier
@@ -232,3 +245,53 @@ fun GreetingPreview() {
     }
 }
 
+
+fun Modifier.shimmerLoadingAnimation(
+    widthOfShadowBrush: Int = 500,
+    angleOfAxisY: Float = 270f,
+    durationMillis: Int = 1000,
+): Modifier {
+    return composed {
+
+        val shimmerColors = listOf(
+            Color.White.copy(alpha = 0.3f),
+            Color.White.copy(alpha = 0.5f),
+            Color.White.copy(alpha = 1.0f),
+            Color.White.copy(alpha = 0.5f),
+            Color.White.copy(alpha = 0.3f),
+        )
+
+        val transition = rememberInfiniteTransition(label = "")
+
+        val translateAnimation = transition.animateFloat(
+            initialValue = 0f,
+            targetValue = (durationMillis + widthOfShadowBrush).toFloat(),
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = durationMillis,
+                    easing = LinearEasing,
+                ),
+                repeatMode = RepeatMode.Restart,
+            ),
+            label = "Shimmer loading animation",
+        )
+
+        this.background(
+            brush = Brush.linearGradient(
+                colors = shimmerColors,
+                start = Offset(x = translateAnimation.value - widthOfShadowBrush, y = 0.0f),
+                end = Offset(x = translateAnimation.value, y = angleOfAxisY),
+            ),
+        )
+    }
+}
+
+@Composable
+fun ComponentRectangle(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .clip(shape = RoundedCornerShape(24.dp))
+            .background(color = Color.Gray)
+            .shimmerLoadingAnimation() // <--- Here.
+    )
+}
