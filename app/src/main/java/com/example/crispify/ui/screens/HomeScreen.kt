@@ -65,7 +65,7 @@ import com.example.crispify.ui.RecipesViewModel
 
 @Composable
 fun HomeScreen(){
-    val recipesViewModel: RecipesViewModel = viewModel()
+    val recipesViewModel: RecipesViewModel = viewModel(factory = RecipesViewModel.Factory)
 
     CrispifyTheme {
         Surface(
