@@ -1,10 +1,11 @@
-package com.example.crispify.ui.theme
+package com.example.crispify.ui
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.crispify.Recipe
+import com.example.crispify.data.NetworkRecipesRepository
 import com.example.crispify.network.RecipeApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +30,7 @@ class RecipesViewModel: ViewModel() {
     }
 
     private suspend fun getRemoteRecipes() = withContext(Dispatchers.IO){
-        RecipeApi.retrofitService.getAllRecipes()
+        NetworkRecipesRepository().getRecipes()
     }
 }
 
