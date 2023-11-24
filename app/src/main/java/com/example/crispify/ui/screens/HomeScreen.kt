@@ -113,21 +113,23 @@ fun HomeScreen(){
 
 @Composable
 fun GreetingHerder(modifier: Modifier){
-    Row(modifier = modifier.fillMaxWidth()) {
+    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Column( modifier = Modifier.width(250.dp)) {
             Text(
                 "Good morning",
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 20.sp
             )
             Text(
                 "What would you like to cook for today ?",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
+                fontSize = 25.sp
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         Image(modifier = Modifier
-            .size(100.dp),
+            .width(150.dp),
+            contentScale = ContentScale.Crop,
             painter = painterResource(R.drawable.ic_launcher_foreground),
             contentDescription =""
         )
